@@ -1,6 +1,16 @@
 
 public class TennisGame1 implements TennisGame {
 
+	private static final String PLAYER2 = "player2";
+	private static final String WIN_FOR = "Win for ";
+	private static final String ADVANTAGE = "Advantage ";
+	private static final int _4 = 4;
+	private static final int _3 = 3;
+	private static final int _0 = 0;
+	private static final int _1 = 1;
+	private static final int _2 = 2;
+	private static final String DEUCE = "Deuce";
+	private static final String ALL = "All";
 	private static final String EMPTY = "";
 	private static final String SCORE_SEPARATOR = "-";
 	private static final String FORTY = "Forty";
@@ -28,9 +38,9 @@ public class TennisGame1 implements TennisGame {
 			return getScoreWhenEquality(firstPlayerScore);
 		}
 
-		boolean isAdvantageOrWin = firstPlayerScore >= 4 || secondPlayerScore >= 4;
+		boolean isAdvantageOrWin = firstPlayerScore >= _4 || secondPlayerScore >= _4;
 		if (isAdvantageOrWin) {
-			return getScoreWhenAdvantageOrWin();
+			return getScoreWhenAdvantageOrWin(firstPlayerScore, secondPlayerScore);
 		}
 
 		return getScoreWhenOtherCases(firstPlayerScore, secondPlayerScore);
@@ -44,51 +54,40 @@ public class TennisGame1 implements TennisGame {
 
 	public String convertPlayerScoreToLitteral(int playerScore) {
 		switch (playerScore) {
-		case 0:
+		case _0:
 			return LOVE;
-		case 1:
+		case _1:
 			return FIFTEEN;
-		case 2:
+		case _2:
 			return THIRTY;
-		case 3:
+		case _3:
 			return FORTY;
 		default:
 			return EMPTY;
 		}
 	}
 
-	public String getScoreWhenAdvantageOrWin() {
-		String score = EMPTY;
-		int minusResult = firstPlayerScore - secondPlayerScore;
-		if (minusResult == 1)
-			score = "Advantage player1";
-		else if (minusResult == -1)
-			score = "Advantage player2";
-		else if (minusResult >= 2)
-			score = "Win for player1";
-		else
-			score = "Win for player2";
+	public String getScoreWhenAdvantageOrWin(int firstPlayerScore, int secondPlayerScore) {
+		int scoreDifference = firstPlayerScore - secondPlayerScore;
+		String leadingOrWinningPlayer = firstPlayerScore - secondPlayerScore > 0 ? PLAYER1 : PLAYER2;
+		if (scoreDifference == 1) {
+			return ADVANTAGE + leadingOrWinningPlayer;
+		}
+		if (scoreDifference == -1) {
+			return ADVANTAGE + leadingOrWinningPlayer;
+		}
+		if (scoreDifference >= 2) {
+			return WIN_FOR + leadingOrWinningPlayer;
+		}
+		return WIN_FOR + leadingOrWinningPlayer;
 
-		return score;
 	}
 
 	public String getScoreWhenEquality(int playersScore) {
-		String score;
-		switch (playersScore) {
-		case 0:
-			score = "Love-All";
-			break;
-		case 1:
-			score = "Fifteen-All";
-			break;
-		case 2:
-			score = "Thirty-All";
-			break;
-		default:
-			score = "Deuce";
-			break;
-
+		if (playersScore > _2) {
+			return DEUCE;
 		}
-		return score;
+		return convertPlayerScoreToLitteral(playersScore) + SCORE_SEPARATOR + ALL;
+
 	}
 }
