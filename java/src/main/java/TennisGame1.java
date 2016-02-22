@@ -1,6 +1,8 @@
 
 public class TennisGame1 implements TennisGame {
 
+	private static final String EMPTY = "";
+	private static final String SCORE_SEPARATOR = "-";
 	private static final String FORTY = "Forty";
 	private static final String THIRTY = "Thirty";
 	private static final String FIFTEEN = "Fifteen";
@@ -23,7 +25,7 @@ public class TennisGame1 implements TennisGame {
 
 		boolean isEquality = firstPlayerScore == secondPlayerScore;
 		if (isEquality) {
-			return getScoreWhenEquality();
+			return getScoreWhenEquality(firstPlayerScore);
 		}
 
 		boolean isAdvantageOrWin = firstPlayerScore >= 4 || secondPlayerScore >= 4;
@@ -31,35 +33,32 @@ public class TennisGame1 implements TennisGame {
 			return getScoreWhenAdvantageOrWin();
 		}
 
-		String score = "";
-		for (int i = 1; i < 3; i++) {
-			int tempScore = 0;
-			if (i == 1)
-				tempScore = firstPlayerScore;
-			else {
-				score += "-";
-				tempScore = secondPlayerScore;
-			}
-			switch (tempScore) {
-			case 0:
-				score += LOVE;
-				break;
-			case 1:
-				score += FIFTEEN;
-				break;
-			case 2:
-				score += THIRTY;
-				break;
-			case 3:
-				score += FORTY;
-				break;
-			}
+		return getScoreWhenOtherCases(firstPlayerScore, secondPlayerScore);
+	}
+
+	public String getScoreWhenOtherCases(int firstPlayerScore, int secondPlayerScore) {
+
+		return convertPlayerScoreToLitteral(firstPlayerScore) + SCORE_SEPARATOR
+				+ convertPlayerScoreToLitteral(secondPlayerScore);
+	}
+
+	public String convertPlayerScoreToLitteral(int playerScore) {
+		switch (playerScore) {
+		case 0:
+			return LOVE;
+		case 1:
+			return FIFTEEN;
+		case 2:
+			return THIRTY;
+		case 3:
+			return FORTY;
+		default:
+			return EMPTY;
 		}
-		return score;
 	}
 
 	public String getScoreWhenAdvantageOrWin() {
-		String score = "";
+		String score = EMPTY;
 		int minusResult = firstPlayerScore - secondPlayerScore;
 		if (minusResult == 1)
 			score = "Advantage player1";
@@ -73,9 +72,9 @@ public class TennisGame1 implements TennisGame {
 		return score;
 	}
 
-	public String getScoreWhenEquality() {
+	public String getScoreWhenEquality(int playersScore) {
 		String score;
-		switch (firstPlayerScore) {
+		switch (playersScore) {
 		case 0:
 			score = "Love-All";
 			break;
