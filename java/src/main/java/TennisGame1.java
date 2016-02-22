@@ -69,9 +69,8 @@ public class TennisGame1 implements TennisGame {
 
 	public String getScoreWhenAdvantageOrWin(int firstPlayerScore, int secondPlayerScore) {
 		int scoreDifference = firstPlayerScore - secondPlayerScore;
-		String leadingOrWinningPlayer = firstPlayerScore - secondPlayerScore > 0 ? PLAYER1 : PLAYER2;
-		boolean isAdvantage = scoreDifference == 1 || scoreDifference == -1;
-		String advantageOrWinFor = isAdvantage ? ADVANTAGE : WIN_FOR;
+		String leadingOrWinningPlayer = scoreDifference > 0 ? PLAYER1 : PLAYER2;
+		String advantageOrWinFor = Math.abs(scoreDifference) == 1 ? ADVANTAGE : WIN_FOR;
 		return advantageOrWinFor + leadingOrWinningPlayer;
 
 	}
