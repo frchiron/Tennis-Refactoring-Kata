@@ -16,119 +16,66 @@ public class TennisGame1 implements TennisGame {
 	private static final String FIFTEEN_DISPLAY = "Fifteen";
 	private static final String LOVE_DISPLAY = "Love";
 	private static final String PLAYER1 = "player1";
-	private Player firstPlayer;
-	private Player secondPlayer;
+	private int firstPlayerScore = 0;
+	private int secondPlayerScore = 0;
 
 	public TennisGame1() {
-		firstPlayer = new Player(PLAYER1);
-		secondPlayer = new Player(PLAYER2);
 	}
 
 	public void wonPoint(String playerName) {
-		if (PLAYER1.equals(playerName)) {
-			firstPlayer.score();
-		} else {
-			secondPlayer.score();
-		}
+		if (playerName == PLAYER1)
+			firstPlayerScore += 1;
+		else
+			secondPlayerScore += 1;
 	}
 
 	public String getScore() {
 
-		if (firstPlayer.isEqualityWith(secondPlayer)) {
-			return getScoreWhenEquality(firstPlayer.getScore());
+		boolean isEquality = firstPlayerScore == secondPlayerScore;
+		if (isEquality) {
+			return getScoreWhenEquality(firstPlayerScore);
 		}
 
-		boolean isAdvantageOrWin = firstPlayer.getScore() > FORTY || secondPlayer.getScore() > FORTY;
+		boolean isAdvantageOrWin = firstPlayerScore > FORTY || secondPlayerScore > FORTY;
 		if (isAdvantageOrWin) {
-			return getScoreWhenAdvantageOrWin();
+			return getScoreWhenAdvantageOrWin(firstPlayerScore, secondPlayerScore);
 		}
 
-		return getScoreWhenOtherCases();
+		return getScoreWhenOtherCases(firstPlayerScore, secondPlayerScore);
 	}
 
 	public String getScoreWhenEquality(int playersScore) {
-		if (firstPlayer.getScore() > THIRTY) {
+		if (playersScore > THIRTY) {
 			return DEUCE;
 		}
-		return firstPlayer.getScoreDisplay() + SCORE_SEPARATOR + ALL;
+		return getScoreDisplay(playersScore) + SCORE_SEPARATOR + ALL;
 
 	}
 
-	public String getScoreWhenAdvantageOrWin() {
-		String leadingOrWinningPlayer = firstPlayer.isLeadingOrWinningVs(secondPlayer) ? firstPlayer.getName()
-				: secondPlayer.getName();
-		String advantageOrWinFor = Math.abs(firstPlayer.getScore() - secondPlayer.getScore()) == 1 ? ADVANTAGE
-				: WIN_FOR;
+	public String getScoreWhenAdvantageOrWin(int firstPlayerScore, int secondPlayerScore) {
+		String leadingOrWinningPlayer = firstPlayerScore - secondPlayerScore > 0 ? PLAYER1 : PLAYER2;
+		String advantageOrWinFor = Math.abs(firstPlayerScore - secondPlayerScore) == 1 ? ADVANTAGE : WIN_FOR;
 		return advantageOrWinFor + leadingOrWinningPlayer;
 
 	}
 
-	public String getScoreWhenOtherCases() {
+	public String getScoreWhenOtherCases(int firstPlayerScore, int secondPlayerScore) {
 
-		return firstPlayer.getScoreDisplay() + SCORE_SEPARATOR + secondPlayer.getScoreDisplay();
+		return getScoreDisplay(firstPlayerScore) + SCORE_SEPARATOR + getScoreDisplay(secondPlayerScore);
 	}
 
-	public class Player {
-		private String name;
-		private Score score;
-
-		public Player(String name) {
-			this.name = name;
-			this.score = new Score();
+	public String getScoreDisplay(int score) {
+		switch (score) {
+		case LOVE:
+			return LOVE_DISPLAY;
+		case FIFTEEN:
+			return FIFTEEN_DISPLAY;
+		case THIRTY:
+			return THIRTY_DISPLAY;
+		case FORTY:
+			return FORTY_DISPLAY;
+		default:
+			return EMPTY;
 		}
-
-		public void score() {
-			this.score.addPoint();
-		}
-
-		public int getScore() {
-			return score.value;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public boolean isLeadingOrWinningVs(Player otherPlayer) {
-			return this.getScore() - otherPlayer.getScore() > 0;
-		}
-
-		public boolean isEqualityWith(Player otherPlayer) {
-			return this.getScore() == otherPlayer.getScore();
-		}
-
-		public String getScoreDisplay() {
-			return score.getDisplay();
-		}
-
-		private class Score {
-
-			int value;
-
-			public Score() {
-				value = 0;
-			}
-
-			public void addPoint() {
-				value++;
-
-			}
-
-			public String getDisplay() {
-				switch (value) {
-				case LOVE:
-					return LOVE_DISPLAY;
-				case FIFTEEN:
-					return FIFTEEN_DISPLAY;
-				case THIRTY:
-					return THIRTY_DISPLAY;
-				case FORTY:
-					return FORTY_DISPLAY;
-				default:
-					return EMPTY;
-				}
-			}
-		}
-
 	}
 }
