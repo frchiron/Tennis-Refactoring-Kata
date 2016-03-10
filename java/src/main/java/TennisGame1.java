@@ -3,9 +3,18 @@ public class TennisGame1 implements TennisGame {
 	private static final String PLAYER2 = "player2";
 	private static final String WIN_FOR = "Win for ";
 	private static final String ADVANTAGE = "Advantage ";
-
+	private static final int FORTY = 3;
+	private static final int LOVE = 0;
+	private static final int FIFTEEN = 1;
+	private static final int THIRTY = 2;
+	private static final String DEUCE = "Deuce";
+	private static final String ALL = "All";
 	private static final String EMPTY = "";
 	private static final String SCORE_SEPARATOR = "-";
+	private static final String FORTY_DISPLAY = "Forty";
+	private static final String THIRTY_DISPLAY = "Thirty";
+	private static final String FIFTEEN_DISPLAY = "Fifteen";
+	private static final String LOVE_DISPLAY = "Love";
 	private static final String PLAYER1 = "player1";
 	private Player firstPlayer;
 	private Player secondPlayer;
@@ -26,10 +35,10 @@ public class TennisGame1 implements TennisGame {
 	public String getScore() {
 
 		if (firstPlayer.isEqualityWith(secondPlayer)) {
-			return firstPlayer.getScore().getDisplayWhenEquality();
+			return getScoreWhenEquality(firstPlayer.getScore());
 		}
 
-		boolean isAdvantageOrWin = firstPlayer.hasAdvantageOrWinForAnyPlayer(secondPlayer);
+		boolean isAdvantageOrWin = firstPlayer.getScore() > FORTY || secondPlayer.getScore() > FORTY;
 		if (isAdvantageOrWin) {
 			return getScoreWhenAdvantageOrWin();
 		}
@@ -37,12 +46,19 @@ public class TennisGame1 implements TennisGame {
 		return getScoreWhenOtherCases();
 	}
 
-	public String getScoreWhenAdvantageOrWin() {
-		String advantageOrWinFor = firstPlayer.isLeadingOrLosingByOnePointVs(secondPlayer) ? ADVANTAGE : WIN_FOR;
+	public String getScoreWhenEquality(int playersScore) {
+		if (firstPlayer.getScore() > THIRTY) {
+			return DEUCE;
+		}
+		return firstPlayer.getScoreDisplay() + SCORE_SEPARATOR + ALL;
 
+	}
+
+	public String getScoreWhenAdvantageOrWin() {
 		String leadingOrWinningPlayer = firstPlayer.isLeadingOrWinningVs(secondPlayer) ? firstPlayer.getName()
 				: secondPlayer.getName();
-
+		String advantageOrWinFor = Math.abs(firstPlayer.getScore() - secondPlayer.getScore()) == 1 ? ADVANTAGE
+				: WIN_FOR;
 		return advantageOrWinFor + leadingOrWinningPlayer;
 
 	}
@@ -53,7 +69,6 @@ public class TennisGame1 implements TennisGame {
 	}
 
 	public class Player {
-
 		private String name;
 		private Score score;
 
@@ -66,8 +81,8 @@ public class TennisGame1 implements TennisGame {
 			this.score.addPoint();
 		}
 
-		public Score getScore() {
-			return score;
+		public int getScore() {
+			return score.value;
 		}
 
 		public String getName() {
@@ -75,19 +90,11 @@ public class TennisGame1 implements TennisGame {
 		}
 
 		public boolean isLeadingOrWinningVs(Player otherPlayer) {
-			return score.getValue() - otherPlayer.getScore().getValue() > 0;
-		}
-
-		public boolean isLeadingOrLosingByOnePointVs(Player otherPlayer) {
-			return (Math.abs(getScore().getValue() - otherPlayer.getScore().getValue())) == 1;
+			return this.getScore() - otherPlayer.getScore() > 0;
 		}
 
 		public boolean isEqualityWith(Player otherPlayer) {
-			return this.getScore().equals(otherPlayer.getScore());
-		}
-
-		public boolean hasAdvantageOrWinForAnyPlayer(Player otherPlayer) {
-			return getScore().getValue() > Score.FORTY || otherPlayer.getScore().getValue() > Score.FORTY;
+			return this.getScore() == otherPlayer.getScore();
 		}
 
 		public String getScoreDisplay() {
@@ -95,16 +102,6 @@ public class TennisGame1 implements TennisGame {
 		}
 
 		private class Score {
-			private static final int FORTY = 3;
-			private static final int LOVE = 0;
-			private static final int FIFTEEN = 1;
-			private static final int THIRTY = 2;
-			private static final String DEUCE = "Deuce";
-			private static final String FORTY_DISPLAY = "Forty";
-			private static final String THIRTY_DISPLAY = "Thirty";
-			private static final String FIFTEEN_DISPLAY = "Fifteen";
-			private static final String LOVE_DISPLAY = "Love";
-			private static final String ALL = "All";
 
 			int value;
 
@@ -115,14 +112,6 @@ public class TennisGame1 implements TennisGame {
 			public void addPoint() {
 				value++;
 
-			}
-
-			public int getValue() {
-				return value;
-			}
-
-			public boolean equals(Score otherScore) {
-				return this.value == otherScore.value;
 			}
 
 			public String getDisplay() {
@@ -138,14 +127,6 @@ public class TennisGame1 implements TennisGame {
 				default:
 					return EMPTY;
 				}
-			}
-
-			public String getDisplayWhenEquality() {
-				if (getValue() > THIRTY) {
-					return DEUCE;
-				}
-				return getDisplay() + SCORE_SEPARATOR + ALL;
-
 			}
 		}
 
